@@ -22,7 +22,7 @@ Using VMWare PowerCLI this Script checks VMware Alerts and Warnings
    - Set "Scanning Interval" to min "10 minutes"
 
 
-5. Set the "$IgnorePattern" or "$IgnoreScript" parameter to Exclude VMs
+5. Set the **Alarm/VM exceptions** parameter to Exclude Alarms
 
 ## Examples
 ![PRTG-VMware-Alerts](media/VMware-Alerts-OK.png)
