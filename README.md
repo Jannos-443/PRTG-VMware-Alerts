@@ -31,7 +31,7 @@ Using VMWare PowerCLI this Script checks VMware Alerts and Warnings
 Alarm/VM exceptions
 ------------------
 Exceptions can be made within this script by changing the variable **$AlarmIgnoreScript** or **$VMIgnoreScript**. This way, the change applies to all PRTG sensors 
-based on this script. If exceptions have to be made on a per sensor level, the script parameter **VMIgnorePattern** or **AlarmIgnorePattern** can be used.
+based on this script. If exceptions have to be made on a per sensor level, the script parameter **$VMIgnorePattern** or **$AlarmIgnorePattern** can be used.
 
 
 For more information about regular expressions in PowerShell, visit [Microsoft Docs](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_regular_expressions).
