@@ -11,18 +11,23 @@ Using VMWare PowerCLI this Script checks VMware Alerts and Warnings
 
 ## HOW TO
 
-1. Download PSx64.exe from PRTG Tools Familiy https://prtgtoolsfamily.com/downloads/sensors
-
-2. Make sure the VMware PowerCLI Module exists on the Probe under the Powershell Module Path
-   - C:\Program Files\WindowsPowerShell\Modules\VMware.VimAutomation.Core
-
-3. Place "PSx64.exe" and "PRTG-VMware-Alerts.ps1" under "C:\Program Files (x86)\PRTG Network Monitor\Custom Sensors\EXEXML"
-
-4. Create new Sensor PSx64.exe -f="PRTG-VMware-Alerts.ps1" -p="%VCenter%" "%Username%" "%PW%"
-   - Set "Scanning Interval" to min "10 minutes"
+1. Make sure the VMware PowerCLI Module exists on the Probe under the Powershell Module Path
+   - `C:\Program Files\WindowsPowerShell\Modules\VMware.VimAutomation.Core`
 
 
-5. Set the **Alarm/VM exceptions** parameter to Exclude Alarms
+2. Place `PRTG-VMware-Snapshot-Alerts.ps1` under `C:\Program Files (x86)\PRTG Network Monitor\Custom Sensors\EXEXML`
+
+3. Create new Sensor
+
+   | Settings | Value |
+   | --- | --- |
+   | EXE/Script | PRTG-VMware-Snapshot.ps1 |
+   | Parameters | -ViServer 'yourVCenter' -User 'yourUser' -Password 'yourPassword' |
+   | Scanning Interval | 10 minutes |
+
+
+4. Set the "$VMIgnorePattern" or "VMIgnorePattern" parameter to exclude Alarms
+
 
 ## Examples
 ![PRTG-VMware-Alerts](media/VMware-Alerts-OK.png)
