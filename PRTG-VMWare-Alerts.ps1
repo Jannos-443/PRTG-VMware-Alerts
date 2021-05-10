@@ -5,7 +5,7 @@
     .DESCRIPTION
     Using VMware PowerCLI this Script checks VMware Alerts and Warnings
     Exceptions can be made within this script by changing the variable $AlarmIgnoreScript or $VMIgnoreScript. This way, the change applies to all PRTG sensors 
-    based on this script. If exceptions have to be made on a per sensor level, the script parameter VMIgnorePattern or AlarmIgnorePattern can be used.
+    based on this script. If exceptions have to be made on a per sensor level, the script parameter $VMIgnorePattern or $AlarmIgnorePattern can be used.
 
     Copy this script to the PRTG probe EXEXML scripts folder (${env:ProgramFiles(x86)}\PRTG Network Monitor\Custom Sensors\EXEXML)
     and create a "EXE/Script Advanced. Choose this script from the dropdown and set at least:
@@ -30,13 +30,13 @@
 
     Example: ^(DemoTestServer|DemoAusname2)$
 
-    Example2: ^(Test123.*|TestPrinter555)$ excluded Test12345 und alles mit 
+    Example2: ^(Test123.*|Test555)$ excludes Test123, Test1234, Test12345 and Test555
 
     #https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_regular_expressions?view=powershell-7.1
     
     .EXAMPLE
     Sample call from PRTG EXE/Script Advanced
-    PSx64.exe -f="PRTG-VMware-Alerts.ps1" -p="%VCenter%" "%Username%" "%PW%"
+    PRTG-VMware-Alerts.ps1 -ViServer "%VCenterName%" -User "%Username%" -Password "%PW%" -AlarmIgnorePattern '(vSphere Health detected new issues in your environment)'
 
     .NOTES
     This script is based on the sample by Paessler (https://kb.paessler.com/en/topic/70174-monitor-vcenter)
@@ -55,14 +55,19 @@ param(
 
 #Catch all unhandled Errors
 trap{
-    $null = Disconnect-VIServer -Server $ViServer -Confirm:$false -ErrorAction SilentlyContinue
+    if($connected)
+        {
+        $null = Disconnect-VIServer -Server $ViServer -Confirm:$false -ErrorAction SilentlyContinue
+        }
+    $Output = "line:$($_.InvocationInfo.ScriptLineNumber.ToString()) char:$($_.InvocationInfo.OffsetInLine.ToString()) --- message: $($_.Exception.Message.ToString()) --- line: $($_.InvocationInfo.Line.ToString()) "
+    $Output = $Output.Replace("<","")
+    $Output = $Output.Replace(">","")
     Write-Output "<prtg>"
-    Write-Output " <error>1</error>"
-    Write-Output " <text>$($_.ToString() - $($_.ScriptStackTrace))</text>"
+    Write-Output "<error>1</error>"
+    Write-Output "<text>$Output</text>"
     Write-Output "</prtg>"
     Exit
 }
-
 [int] $Warnings = 0
 [int] $WarningsNotAck = 0
 [int] $WarningsAck = 0
@@ -72,6 +77,27 @@ trap{
 [String] $WarningsText = ""
 [String] $AlertsText = ""
 
+#https://stackoverflow.com/questions/19055924/how-to-launch-64-bit-powershell-from-32-bit-cmd-exe
+#############################################################################
+#If Powershell is running the 32-bit version on a 64-bit machine, we 
+#need to force powershell to run in 64-bit mode .
+#############################################################################
+if ($env:PROCESSOR_ARCHITEW6432 -eq "AMD64") {
+    #Write-warning  "Y'arg Matey, we're off to 64-bit land....."
+    if ($myInvocation.Line) {
+        &"$env:WINDIR\sysnative\windowspowershell\v1.0\powershell.exe" -NonInteractive -NoProfile $myInvocation.Line
+    }else{
+        &"$env:WINDIR\sysnative\windowspowershell\v1.0\powershell.exe" -NonInteractive -NoProfile -file "$($myInvocation.InvocationName)" $args
+    }
+exit $lastexitcode
+}
+
+#############################################################################
+#End
+#############################################################################    
+
+
+$connected = $false
 
 # Import VMware PowerCLI module
 $ViModule = "VMware.VimAutomation.Core"
@@ -95,13 +121,17 @@ Set-PowerCLIConfiguration -InvalidCertificateAction ignore -confirm:$false | Out
 # Connect to vCenter
 try {
     Connect-VIServer -Server $ViServer -User $User -Password $Password -ErrorAction Stop | Out-Null
-} catch {
+
+    $connected = $true
+    } 
+catch 
+    {
     Write-Output "<prtg>"
     Write-Output " <error>1</error>"
     Write-Output " <text>Could not connect to vCenter server $ViServer. Error: $($_.Exception.Message)</text>"
     Write-Output "</prtg>"
     Exit
-}
+    }
 
 # Get a list of all Alarms
 try {
@@ -141,7 +171,7 @@ if ($Alarms.Count -gt 0) {
         $name = ((get-view $alarm.Alarm -Server $ViServer).info).name #Alarm Name
 
         #check ignore variables
-        if(($name -match $AlarmIgnoreScript) -or ($path -match $VMIgnoreScript) -or ($path -match $VMIgnorePattern) -or ($alarm -match $AlarmIgnorePattern))
+        if(($name -match $AlarmIgnoreScript) -or ($name -match $AlarmIgnorePattern) -or ($path -match $VMIgnoreScript) -or ($path -match $VMIgnorePattern))
             {
             #ignored
             }
@@ -204,6 +234,7 @@ else
 # Disconnect from vCenter
 Disconnect-VIServer -Server $ViServer -Confirm:$false
 
+$connected = $false
 
 $xmlOutput = $xmlOutput + "<result>
         <channel>Total Alerts - NOT Acknowledged</channel>
