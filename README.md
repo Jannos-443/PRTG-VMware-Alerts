@@ -7,7 +7,9 @@ Jannos-443
 
 ## Project Details
 
-Using VMWare PowerCLI this Script checks VMware Alerts and Warnings
+Using VMWare PowerCLI this Script checks VMware Alerts.
+You can exclude specific Alarms or VMs. (see Alarm/VM exceptions)
+All Acknowledged Alarms/Warnings are counted but only for logging.
 
 ## HOW TO
 
@@ -26,7 +28,7 @@ Using VMWare PowerCLI this Script checks VMware Alerts and Warnings
    | Scanning Interval | 10 minutes |
 
 
-4. Set the "$VMIgnorePattern" or "VMIgnorePattern" parameter to exclude Alarms
+4. Set the "$VMIgnorePattern" or "$VMIgnorePattern" parameter to exclude Alarms
 
 
 ## Examples
