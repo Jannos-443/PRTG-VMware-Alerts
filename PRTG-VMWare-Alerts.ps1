@@ -67,7 +67,7 @@ trap{
     Write-Output "<text>$Output</text>"
     Write-Output "</prtg>"
     Exit
-}
+    }
 [int] $Warnings = 0
 [int] $WarningsNotAck = 0
 [int] $WarningsAck = 0
@@ -223,6 +223,11 @@ if($WarningsNotAck -gt 0)
 
 if(($WarningsNotAck -gt 0) -or ($AlertsNotAck -gt 0))
     {
+    $OutputText = $OutputText.Replace("<","")
+    $OutputText = $OutputText.Replace(">","")
+    $OutputText = $OutputText.Replace("#","")
+    #The number sign (#) is not supported in sensor messages. If a message contains a number sign, the message is clipped at this point - https://www.paessler.com/manuals/prtg/custom_sensors
+    
     $xmlOutput = $xmlOutput + "<text>$OutputText</text>"
     }
 
@@ -264,9 +269,8 @@ $xmlOutput = $xmlOutput + "<result>
         <unit>Count</unit>
         </result>"   
         
-
-
-
 $xmlOutput = $xmlOutput + "</prtg>"
 
-$xmlOutput
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+[Console]::WriteLine($xmlOutput)
+#https://kb.paessler.com/en/topic/64817-how-can-i-show-special-characters-with-exe-script-sensors
