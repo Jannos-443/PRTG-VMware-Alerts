@@ -112,11 +112,20 @@ try {
     Exit
 }
 
-#avoid unecessary output
-Set-PowerCLIConfiguration -Scope User -ParticipateInCEIP:$false -confirm:$false
+#PowerCLI Configuration Settings
+try
+    {
+    #Ignore certificate warnings
+    Set-PowerCLIConfiguration -InvalidCertificateAction ignore -Scope User -Confirm:$false | Out-Null
 
-# Ignore certificate warnings
-Set-PowerCLIConfiguration -InvalidCertificateAction ignore -confirm:$false | Out-Null
+    #Disable CEIP
+    Set-PowerCLIConfiguration -ParticipateInCeip $false -Scope User -Confirm:$false | Out-Null
+    }
+
+catch
+    {
+    Write-Host "Error in Set-PowerCLIConfiguration but we will ignore it." #Error when another Script is currently accessing it.
+    }
 
 # Connect to vCenter
 try {
@@ -271,6 +280,14 @@ $xmlOutput = $xmlOutput + "<result>
         
 $xmlOutput = $xmlOutput + "</prtg>"
 
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-[Console]::WriteLine($xmlOutput)
-#https://kb.paessler.com/en/topic/64817-how-can-i-show-special-characters-with-exe-script-sensors
+try
+    {
+    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+    [Console]::WriteLine($xmlOutput)
+    #https://kb.paessler.com/en/topic/64817-how-can-i-show-special-characters-with-exe-script-sensors
+    }
+
+catch
+    {
+    $xmlOutput
+    }
