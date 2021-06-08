@@ -16,7 +16,7 @@
     .PARAMETER ViServer
     The Hostname of the VCenter Server
 
-    .PARAMETER UserName
+    .PARAMETER User
     Provide the VCenter Username
 
     .PARAMETER Password
@@ -112,7 +112,7 @@ try {
     Exit
 }
 
-#PowerCLI Configuration Settings
+# PowerCLI Configuration Settings
 try
     {
     #Ignore certificate warnings
