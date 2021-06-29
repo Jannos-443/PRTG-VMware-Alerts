@@ -62,6 +62,7 @@ trap{
     $Output = "line:$($_.InvocationInfo.ScriptLineNumber.ToString()) char:$($_.InvocationInfo.OffsetInLine.ToString()) --- message: $($_.Exception.Message.ToString()) --- line: $($_.InvocationInfo.Line.ToString()) "
     $Output = $Output.Replace("<","")
     $Output = $Output.Replace(">","")
+    $Output = $Output.Replace("#","")
     Write-Output "<prtg>"
     Write-Output "<error>1</error>"
     Write-Output "<text>$Output</text>"
