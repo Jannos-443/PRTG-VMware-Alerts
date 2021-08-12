@@ -30,7 +30,7 @@ All Acknowledged Alarms/Warnings are counted but only for logging.
 
 4. Set the "$VMIgnorePattern" or "$VMIgnorePattern" parameter to exclude Alarms
    
-   example: `-AlarmIgnorePattern '(vSphere Health detected new issues in your environment)'`
+   example: `-AlarmIgnorePattern '^(vSphere Health detected new issues in your environment)$'`
 
 ## Examples
 ![PRTG-VMware-Alerts](media/VMware-Alerts-OK.png)
