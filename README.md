@@ -23,7 +23,7 @@ All Acknowledged Alarms/Warnings are counted but only for logging.
 
    | Settings | Value |
    | --- | --- |
-   | EXE/Script | PRTG-VMware-Alerts.ps1 |
+   | EXE/Script Advanced | PRTG-VMware-Alerts.ps1 |
    | Parameters | -ViServer 'yourVCenter' -User 'yourUser' -Password 'yourPassword' |
    | Scanning Interval | 10 minutes |
 
